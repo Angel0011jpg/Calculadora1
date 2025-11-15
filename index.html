@@ -5,158 +5,297 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Calculadora Subasta</title>
 <style>
-  :root{
-    --bg:#f2f4f7;
-    --card:#ffffff;
-    --text:#2c3e50;
-    --label:#34495e;
-    --input-border:#d1d1d1;
-    --result-bg:#f8fafc;
-    --success:#2ecc71;
-    --error:#e74c3c;
-    --info:#3498db;
+:root{
+  --bg:#f2f4f7;
+  --card:#ffffff;
+  --text:#2c3e50;
+  --label:#34495e;
+  --input-border:#d1d1d1;
+  --result-bg:#f8fafc;
+  --success:#2ecc71;
+  --error:#e74c3c;
+  --info:#3498db;
+}
+body.dark{
+  --bg:#1e1e1e;
+  --card:#2a2a2a;
+  --text:#f1f1f1;
+  --label:#d0d0d0;
+  --input-border:#555;
+  --result-bg:#333;
+}
+*{transition: all .25s ease;}
+body{
+  font-family:Segoe UI,Arial,sans-serif;
+  margin:0;
+  background:var(--bg);
+  display:flex;
+  justify-content:center;
+  padding:12px;
+}
+.app{
+  width:100%;
+  max-width:600px;
+  display:flex;
+  flex-direction:column;
+}
+
+/* --- CARDS --- */
+.card{
+  background:var(--card);
+  padding:18px;
+  border-radius:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+  margin-bottom:16px;
+}
+label{
+  display:block;
+  font-weight:600;
+  color:var(--label);
+  margin-bottom:6px;
+  font-size:15px;
+}
+input, select{
+  width:100%;
+  padding:16px;
+  border-radius:12px;
+  border:1.5px solid var(--input-border);
+  font-size:16px;
+  margin-bottom:12px;
+  background:var(--bg);
+  color:var(--text);
+  box-sizing:border-box;
+}
+.price-controls{
+  display:flex;
+  gap:8px;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+.small-btn{
+  padding:10px 16px;
+  border-radius:12px;
+  border:none;
+  font-weight:700;
+  cursor:pointer;
+  background:#3b82f6;
+  color:white;
+  transition:transform .15s ease;
+}
+.small-btn:active{transform:scale(0.92)}
+.btn-main{
+  flex:1;
+  min-width:120px;
+  padding:14px;
+  border-radius:14px;
+  border:none;
+  font-weight:700;
+  cursor:pointer;
+  background:#3b82f6;
+  color:white;
+  font-size:16px;
+}
+.btn-main:active{transform:scale(0.95);}
+
+/* --- HEADER --- */
+.header{
+  margin-bottom:0;
+  padding:16px;
+  border-radius:16px 16px 0 0;
+  text-align:center;
+  font-weight:700;
+  box-shadow:0 8px 20px rgba(0,0,0,0.15);
+  font-size:18px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+}
+
+/* --- TOGGLE DARK --- */
+.toggle-dark{
+  position:absolute;
+  right:12px;
+  top:12px;
+  cursor:pointer;
+  font-size:22px;
+  background:#0004;
+  padding:8px 14px;
+  border-radius:10px;
+  color:white;
+  user-select:none;
+}
+
+/* --- RESULTADOS --- */
+.result-box{
+  background:var(--result-bg);
+  padding:16px;
+  border-radius:14px;
+  margin-top:8px;
+}
+.res{margin:8px 0;font-size:16px; line-height:1.4;}
+.ganancia{font-size:20px;font-weight:800}
+.g-pos{color:var(--success)}
+.g-neg{color:var(--error)}
+.label-inline{font-size:13px;color:#7f8c8d;margin-bottom:6px}
+
+/* --- LISTA DE COMPRAS --- */
+.lista-compras{
+  margin-top:16px;
+  max-height:400px;
+  overflow-y:auto;
+  padding-right:4px;
+}
+.lista-item{
+  background:var(--card);
+  padding:14px;
+  border-radius:14px;
+  margin-bottom:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  box-shadow:0 4px 14px rgba(0,0,0,0.07);
+  flex-wrap:wrap;
+}
+.item-info{
+  flex:1;
+  font-size:14px;
+  line-height:1.4;
+}
+.delete-btn{
+  padding:6px 12px;
+  background:var(--error);
+  border:none;
+  color:white;
+  font-weight:700;
+  border-radius:10px;
+  cursor:pointer;
+  margin-top:6px;
+}
+
+/* --- FILTROS ABAJO --- */
+.filtros{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.filtros select{
+  flex:1;
+  min-width:120px;
+}
+
+/* --- FECHA --- */
+.fecha{
+  margin-bottom:12px;
+  text-align:center;
+  font-weight:600;
+  color:var(--label);
+  font-size:14px;
+}
+
+/* --- NOTIFICACION --- */
+.notification{
+  position:fixed;
+  top:20px;
+  right:20px;
+  background:var(--info);
+  color:white;
+  padding:14px 20px;
+  border-radius:12px;
+  font-weight:600;
+  box-shadow:0 6px 16px rgba(0,0,0,0.25);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .4s ease;
+  z-index:9999;
+}
+.notification.show{opacity:1; pointer-events:auto;}
+
+/* --- TOTALES --- */
+.totales{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.total-box{
+  flex:1; 
+  min-width:120px; 
+  background:var(--result-bg); 
+  padding:14px; 
+  border-radius:12px; 
+  font-weight:600; 
+  text-align:center;
+  font-size:15px;
+}
+
+/* --- PANTALLA DE INICIO --- */
+#inicio{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+  gap:16px;
+  padding:0 16px;
+  box-sizing:border-box;
+}
+#inicio h2{
+  margin-bottom:12px;
+  text-align:center;
+  font-size:18px;
+}
+#inicio button{
+  padding:14px 22px;
+  font-size:16px;
+  border-radius:14px;
+  border:none;
+  background:#3b82f6;
+  color:white;
+  cursor:pointer;
+}
+#inicio button:active{transform:scale(0.95);}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 600px){
+  .totales{
+    flex-direction:column;
   }
-  body.dark{
-    --bg:#1e1e1e;
-    --card:#2a2a2a;
-    --text:#f1f1f1;
-    --label:#d0d0d0;
-    --input-border:#555;
-    --result-bg:#333;
+  .total-box{
+    flex:1 1 100%;
+    margin-bottom:8px;
   }
-  *{transition: all .25s ease;}
-  body{
-    font-family:Segoe UI,Arial,sans-serif;
-    margin:0;
-    background:var(--bg);
-    display:flex;
-    justify-content:center;
-    padding:18px;
+  .btns-main{
+    flex-direction:column;
   }
-  .app{width:100%;max-width:600px}
-  .card{
-    background:var(--card);
-    padding:18px;
-    border-radius:14px;
-    box-shadow:0 6px 18px rgba(0,0,0,0.06);
-    margin-bottom:14px;
-  }
-  label{display:block;font-weight:600;color:var(--label);margin-bottom:6px}
-  input, select{
-    width:100%;
-    padding:12px;
-    border-radius:10px;
-    border:1.5px solid var(--input-border);
-    font-size:16px;
-    margin-bottom:12px;
-    background:var(--bg);
-    color:var(--text);
-  }
-  .price-controls{display:flex;gap:8px;margin-bottom:10px}
-  .small-btn{
-    padding:8px 12px;
-    border-radius:10px;
-    border:none;
-    font-weight:700;
-    cursor:pointer;
-    background:#3b82f6;
-    color:white;
-    transition:transform .15s ease;
-  }
-  .small-btn:active{transform:scale(0.92)}
   .btn-main{
-    flex:1;
-    min-width:120px;
-    padding:10px;
-    border-radius:10px;
-    border:none;
-    font-weight:700;
-    cursor:pointer;
-    background:#3b82f6;
-    color:white;
+    width:100%;
+    margin-bottom:10px;
   }
-  .btn-main:active{transform:scale(0.95);}
-  .header{
-    background:#2c3e50;
-    color:#fff;
+  .lista-item{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:8px;
+  }
+  .delete-btn{
+    align-self:flex-end;
+  }
+  .price-controls{
+    gap:6px;
+  }
+  input, select{
+    font-size:16px;
     padding:14px;
-    border-radius:14px;
-    text-align:center;
-    font-weight:700;
-    box-shadow:0 6px 18px rgba(0,0,0,0.12);
-    margin-bottom:16px;
-    position:relative;
   }
   .toggle-dark{
-    position:absolute;
-    right:12px;
-    top:12px;
-    cursor:pointer;
-    font-size:14px;
-    background:#0004;
-    padding:6px 10px;
-    border-radius:8px;
-    color:white;
-    user-select:none;
+    font-size:24px;
+    padding:8px 16px;
   }
-  .result-box{
-    background:var(--result-bg);
-    padding:14px;
-    border-radius:12px;
-    margin-top:8px;
-  }
-  .res{margin:8px 0;font-size:16px}
-  .ganancia{font-size:20px;font-weight:800}
-  .g-pos{color:var(--success)}
-  .g-neg{color:var(--error)}
-  .label-inline{font-size:13px;color:#7f8c8d;margin-bottom:6px}
-  .lista-compras{margin-top:16px;}
-  .lista-item{
-    background:var(--card);
+  #inicio{
     padding:12px;
-    border-radius:12px;
-    margin-bottom:10px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    box-shadow:0 3px 12px rgba(0,0,0,0.06);
   }
-  .item-info{flex:1; font-size:14px;}
-  .delete-btn{
-    padding:4px 8px;
-    background:var(--error);
-    border:none;
-    color:white;
-    font-weight:700;
-    border-radius:8px;
-    cursor:pointer;
-  }
-  .fecha{margin-bottom:12px;text-align:center;font-weight:600;color:var(--label);}
-  .notification{
-    position:fixed;
-    top:20px;
-    right:20px;
-    background:var(--info);
-    color:white;
-    padding:12px 18px;
-    border-radius:10px;
-    font-weight:600;
-    box-shadow:0 4px 12px rgba(0,0,0,0.2);
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .4s ease;
-    z-index:9999;
-  }
-  .notification.show{opacity:1; pointer-events:auto;}
-  .filtros{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
-  .filtros select{flex:1; min-width:120px;}
-  .totales{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
-  .total-box{flex:1; min-width:120px; background:var(--result-bg); padding:12px; border-radius:10px; font-weight:600; text-align:center;}
-  /* Pantalla de inicio */
-  #inicio{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:12px;}
-  #inicio h2{margin-bottom:12px;}
-  #inicio button{padding:10px 20px;font-size:16px;border-radius:10px;border:none;background:#3b82f6;color:white;cursor:pointer;}
-  #inicio button:active{transform:scale(0.95);}
+}
 </style>
 </head>
 <body>
@@ -198,17 +337,15 @@
           <button class="small-btn" onclick="ajustar('compra', 10)">+10</button>
           <button class="small-btn" onclick="ajustar('compra', -10)">-10</button>
         </div>
-        <div class="label-inline">Se usa para calcular cuánto pagaste</div>
       </div>
 
       <div style="flex:1;min-width:170px">
         <label>Precio canal / venta (₡/kg)</label>
         <input id="precioCanal" type="number" value="0" oninput="calcular()" />
         <div class="price-controls">
-          <button class="small-btn" onclick="ajustar('canal', 10)">+10</button>
-          <button class="small-btn" onclick="ajustar('canal', -10)">-10</button>
+          <button class="small-btn" onclick="ajustar('canal', 5)">+5</button>
+          <button class="small-btn" onclick="ajustar('canal', -5)">-5</button>
         </div>
-        <div class="label-inline">Se usa para calcular el valor del canal</div>
       </div>
     </div>
 
@@ -262,7 +399,6 @@ let compras = [];
 let usuarioActual = '';
 let subastaActual = '';
 
-// --- INICIO ---
 function iniciarApp(){
   const subasta = document.getElementById('subastaSelect').value;
   const usuario = document.getElementById('usuarioSelect').value;
@@ -270,12 +406,11 @@ function iniciarApp(){
   subastaActual = subasta;
   usuarioActual = usuario;
   document.getElementById('inicio').style.display='none';
-  document.querySelector('.app').style.display='block';
+  document.querySelector('.app').style.display='flex';
   mostrarFecha();
   cargarLocalStorage();
 }
 
-// --- CALCULOS ---
 function calcular(){
   const peso = Number(document.getElementById('peso').value) || 0;
   const precioCompra = Number(document.getElementById('precioCompra').value) || 0;
@@ -311,21 +446,20 @@ function calcular(){
 }
 
 function ajustar(tipo, delta){
-  if (tipo === 'compra'){
-    let el = document.getElementById('precioCompra');
-    let v = Number(el.value) || 0; v += delta; if (v<0) v=0; el.value = v;
-  } else {
-    let el = document.getElementById('precioCanal');
-    let v = Number(document.getElementById('precioCanal').value) || 0; v += delta; if (v<0) v=0; document.getElementById('precioCanal').value = v;
+  if(tipo==='compra'){
+    let el=document.getElementById('precioCompra');
+    let v=Number(el.value)||0; v+=delta; if(v<0)v=0; el.value=v;
+  }else{
+    let el=document.getElementById('precioCanal');
+    let v=Number(el.value)||0; v+=delta; if(v<0)v=0; el.value=v;
   }
   calcular();
 }
 
 function toggleDark(){document.body.classList.toggle("dark");}
 function limpiar(){
-  document.getElementById('peso').value = '';
-  document.getElementById('precioCompra').value = 0;
-  document.getElementById('precioCanal').value = 0;
+  document.getElementById('peso').value='';
+  document.getElementById('precioCompra').value=0;
   calcular();
 }
 
@@ -334,104 +468,97 @@ function regresarInicio(){
   document.getElementById('inicio').style.display='flex';
 }
 
-// --- FECHA ---
 function mostrarFecha(){
-  const f = new Date();
-  const fechaStr = f.toLocaleDateString('es-CR') + ' ' + f.toLocaleTimeString('es-CR');
-  document.getElementById('fecha').textContent = fechaStr;
+  const f=new Date();
+  document.getElementById('fecha').textContent=f.toLocaleDateString('es-CR')+' '+f.toLocaleTimeString('es-CR');
 }
-setInterval(mostrarFecha, 1000);
+setInterval(mostrarFecha,1000);
 
-// --- LISTA ---
 function renderLista(){
-  const lista = document.getElementById('listaCompras');
-  lista.innerHTML = '';
-  const filtroSubasta = document.getElementById('filtroSubasta').value;
-  const filtroUsuario = document.getElementById('filtroUsuario').value;
-  let totalPagado = 0, totalGanancia = 0;
+  const lista=document.getElementById('listaCompras');
+  lista.innerHTML='';
+  let totalPagado=0, totalGanancia=0;
+  const filtroSubasta=document.getElementById('filtroSubasta').value;
+  const filtroUsuario=document.getElementById('filtroUsuario').value;
   compras.forEach((c,index)=>{
-    if((filtroSubasta==='all' || c.subasta===filtroSubasta) &&
-       (filtroUsuario==='all' || c.usuario===filtroUsuario)){
-      totalPagado += c.pagado;
-      totalGanancia += c.ganancia;
-      const item = document.createElement('div');
+    if((filtroSubasta==='all'||c.subasta===filtroSubasta) &&
+       (filtroUsuario==='all'||c.usuario===filtroUsuario)){
+      totalPagado+=c.pagado;
+      totalGanancia+=c.ganancia;
+      const item=document.createElement('div');
       item.className='lista-item';
       item.innerHTML=`
         <div class="item-info">
           <strong>${c.fecha}</strong> | <em>${c.usuario}</em> | <strong>${c.subasta}</strong><br>
-          Peso: ${c.peso} kg, Peso canal: ${c.pesoCanal} kg<br>
-          Pagado: ₡${c.pagado.toLocaleString('es-CR')}, Valor venta: ₡${c.valorCanal.toLocaleString('es-CR')}, Ganancia: ₡${c.ganancia.toLocaleString('es-CR')}
+          Peso: ${c.peso} kg, Precio compra: ₡${c.precioCompra.toLocaleString('es-CR')}<br>
+          Total pagado: ₡${c.pagado.toLocaleString('es-CR')}, Precio canal: ₡${c.precioCanal.toLocaleString('es-CR')}, Ganancia: ₡${c.ganancia.toLocaleString('es-CR')}
         </div>
-        <button class="delete-btn" onclick="eliminarCompra(${index})">X</button>
+        <button class="delete-btn" onclick="eliminarCompra(${index})">Eliminar</button>
       `;
-      lista.prepend(item);
+      lista.appendChild(item);
     }
   });
-  document.getElementById('totalPagado').textContent = totalPagado.toLocaleString('es-CR');
-  document.getElementById('totalGanancia').textContent = totalGanancia.toLocaleString('es-CR');
-  localStorage.setItem('compras', JSON.stringify(compras));
+  document.getElementById('totalPagado').textContent=totalPagado.toLocaleString('es-CR');
+  document.getElementById('totalGanancia').textContent=totalGanancia.toLocaleString('es-CR');
+  guardarLocalStorage();
 }
 
-// --- COMPRA ---
 function agregarCompra(){
-  const peso = Number(document.getElementById('peso').value) || 0;
+  const peso=Number(document.getElementById('peso').value)||0;
   if(peso<=0) return alert("Ingrese un peso válido");
-  const precioCompra = Number(document.getElementById('precioCompra').value) || 0;
-  const precioCanal = Number(document.getElementById('precioCanal').value) || 0;
-  let pesoCanal = peso - 250; if (pesoCanal < 0) pesoCanal=0;
-  const pagado = peso*precioCompra;
-  const valorCanal = pesoCanal*precioCanal;
-  const ganancia = valorCanal - pagado;
-  const fecha = new Date().toLocaleString('es-CR');
+  const precioCompra=Number(document.getElementById('precioCompra').value)||0;
+  const precioCanal=Number(document.getElementById('precioCanal').value)||0;
+  let pesoCanal=peso-250;if(pesoCanal<0)pesoCanal=0;
+  const pagado=peso*precioCompra;
+  const valorCanal=pesoCanal*precioCanal;
+  const ganancia=valorCanal-pagado;
+  const fecha=new Date().toLocaleString('es-CR');
 
-  compras.push({fecha,peso,pesoCanal,pagado,valorCanal,ganancia,usuario:usuarioActual,subasta:subastaActual});
+  compras.push({fecha,peso,pesoCanal,pagado,valorCanal,ganancia,usuario:usuarioActual,subasta:subastaActual,precioCompra,precioCanal});
   renderLista();
+  limpiar();
   mostrarNotificacion("Compra agregada");
 }
 
-// --- ELIMINAR ---
 function eliminarCompra(index){
   compras.splice(index,1);
   renderLista();
+  mostrarNotificacion("Compra eliminada");
 }
 
-// --- LOCAL STORAGE ---
+function guardarLocalStorage(){
+  localStorage.setItem('compras',JSON.stringify(compras));
+}
 function cargarLocalStorage(){
-  const data = localStorage.getItem('compras');
-  if(data){
-    compras = JSON.parse(data);
-    renderLista();
-  }
+  const data=localStorage.getItem('compras');
+  if(data){compras=JSON.parse(data); renderLista();}
 }
 
-// --- EXPORTAR ---
 function exportarExcel(){
   if(compras.length===0) return alert("No hay datos para exportar");
   function formatCR(num){return '₡'+num.toLocaleString('es-CR');}
-  let csv = 'Fecha,Usuario,Subasta,Peso,Peso Canal,Pagado,Valor Venta,Ganancia\n';
+  let csv='Fecha,Usuario,Subasta,Peso,PrecioCompra,PrecioCanal,Total Pagado,Valor Canal,Ganancia\n';
   compras.forEach(c=>{
-    csv += `"${c.fecha}","${c.usuario}","${c.subasta}",${c.peso},${c.pesoCanal},${formatCR(c.pagado)},${formatCR(c.valorCanal)},${formatCR(c.ganancia)}\n`;
+    csv+=`"${c.fecha}","${c.usuario}","${c.subasta}",${c.peso},${c.precioCompra},${c.precioCanal},${formatCR(c.pagado)},${formatCR(c.valorCanal)},${formatCR(c.ganancia)}\n`;
   });
-  const blob = new Blob([csv], {type: 'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href=url;
-  a.download=`compras_${subastaActual}.csv`;
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=`compras_${subastaActual}.csv`;
   a.click();
   URL.revokeObjectURL(url);
   mostrarNotificacion("Datos exportados");
 }
 
-// --- NOTIFICACIONES ---
 function mostrarNotificacion(msg){
-  const n = document.getElementById('notificacion');
-  n.textContent = msg;
+  const n=document.getElementById('notificacion');
+  n.textContent=msg;
   n.classList.add('show');
   setTimeout(()=>n.classList.remove('show'),2500);
 }
 
-// --- Inicial ---
 calcular();
 </script>
+
 </body>
 </html>
