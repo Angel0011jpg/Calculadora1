@@ -1,13 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <link rel="manifest" href="manifest.json">
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js");
-  }
-</script>
-
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Calculadora</title>
@@ -31,11 +24,7 @@
     --result-bg:#333;
   }
 
-  /* ANIMACIÓN SUAVE */
-  *{
-    transition: all .25s ease;
-  }
-
+  *{transition: all .25s ease;}
   body{
     font-family:Segoe UI,Arial,sans-serif;
     margin:0;
@@ -44,7 +33,6 @@
     justify-content:center;
     padding:18px;
   }
-
   .app{width:100%;max-width:520px}
 
   .header{
@@ -59,7 +47,6 @@
     position:relative;
   }
 
-  /* SWITCH MODO OSCURO */
   .toggle-dark{
     position:absolute;
     right:12px;
@@ -82,7 +69,6 @@
   }
 
   label{display:block;font-weight:600;color:var(--label);margin-bottom:6px}
-
   input{
     width:100%;
     padding:12px;
@@ -95,7 +81,6 @@
   }
 
   .price-controls{display:flex;gap:8px;margin-bottom:10px}
-
   .small-btn{
     padding:8px 12px;
     border-radius:10px;
@@ -116,23 +101,56 @@
     opacity:0;
     animation:fadeIn .5s forwards;
   }
-
-  @keyframes fadeIn{
-    to{opacity:1;}
-  }
-
+  @keyframes fadeIn{to{opacity:1;}}
   .res{margin:8px 0;font-size:16px}
   .ganancia{font-size:20px;font-weight:800}
-
   .g-pos{color:#2ecc71}
   .g-neg{color:#e74c3c}
-
   .label-inline{font-size:13px;color:#7f8c8d;margin-bottom:6px}
+
+  .lista-compras{margin-top:16px;}
+  .lista-item{
+    background:var(--card);
+    padding:12px;
+    border-radius:12px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 3px 12px rgba(0,0,0,0.06);
+  }
+  .item-info{flex:1; font-size:14px;}
+  .delete-btn{
+    padding:4px 8px;
+    background:#e74c3c;
+    border:none;
+    color:white;
+    font-weight:700;
+    border-radius:8px;
+    cursor:pointer;
+  }
+
+  .btns-main{display:flex;gap:12px;margin-top:6px;flex-wrap:wrap;}
+  .btn-main{
+    flex:1;
+    min-width:120px;
+    padding:10px;
+    border-radius:10px;
+    border:none;
+    font-weight:700;
+    cursor:pointer;
+    background:#3b82f6;
+    color:white;
+  }
+  .btn-main:active{transform:scale(0.95);}
+  .fecha{margin-bottom:12px;text-align:center;font-weight:600;color:var(--label);}
 </style>
 </head>
 
 <body>
   <div class="app">
+
+    <div class="fecha" id="fecha"></div>
 
     <div class="header">
       Calculadora
@@ -164,6 +182,12 @@
           <div class="label-inline">Se usa para calcular el valor del canal</div>
         </div>
       </div>
+
+      <div class="btns-main">
+        <button class="btn-main" onclick="agregarCompra()">Compra</button>
+        <button class="btn-main" onclick="limpiar()">Limpiar</button>
+        <button class="btn-main" onclick="exportarExcel()">Exportar a Excel</button>
+      </div>
     </div>
 
     <div class="card">
@@ -176,9 +200,14 @@
       </div>
     </div>
 
+    <div class="lista-compras" id="listaCompras"></div>
+
   </div>
 
 <script>
+let compras = [];
+
+// --- CALCULOS ---
 function calcular(){
   const peso = Number(document.getElementById('peso').value) || 0;
   const precioCompra = Number(document.getElementById('precioCompra').value) || 0;
@@ -195,14 +224,11 @@ function calcular(){
   document.getElementById('valorCanal').textContent = valorCanal.toLocaleString('es-CR');
 
   const gananciaText = document.getElementById('gananciaText');
-
-  // Estilo de ganancia o pérdida
   if (ganancia < 0) {
     gananciaText.classList.add('g-neg');
     gananciaText.classList.remove('g-pos');
     gananciaText.querySelector('strong').textContent = 'Pérdida:';
     document.getElementById('ganancia').textContent = (-ganancia).toLocaleString('es-CR');
-
   } else {
     gananciaText.querySelector('strong').textContent = 'Ganancia:';
     document.getElementById('ganancia').textContent = ganancia.toLocaleString('es-CR');
@@ -223,13 +249,99 @@ function ajustar(tipo, delta){
     let v = Number(el.value) || 0; v += delta; if (v<0) v=0; el.value = v;
   } else {
     let el = document.getElementById('precioCanal');
-    let v = Number(el.value) || 0; v += delta; if (v<0) v=0; el.value = v;
+    let v = Number(el.value) || 0; v += delta; if (v<0) v=0; document.getElementById('precioCanal').value = v;
   }
   calcular();
 }
 
-function toggleDark(){
-  document.body.classList.toggle("dark");
+function toggleDark(){document.body.classList.toggle("dark");}
+function limpiar(){
+  document.getElementById('peso').value = '';
+  document.getElementById('precioCompra').value = 0;
+  document.getElementById('precioCanal').value = 0;
+  calcular();
+}
+
+// --- FECHA ---
+function mostrarFecha(){
+  const f = new Date();
+  const fechaStr = f.toLocaleDateString('es-CR') + ' ' + f.toLocaleTimeString('es-CR');
+  document.getElementById('fecha').textContent = fechaStr;
+}
+setInterval(mostrarFecha, 1000);
+
+// --- LISTA DE COMPRAS ---
+function renderLista(){
+  const lista = document.getElementById('listaCompras');
+  lista.innerHTML = '';
+  compras.forEach((c,index)=>{
+    const item = document.createElement('div');
+    item.className='lista-item';
+    item.innerHTML=`
+      <div class="item-info">
+        <strong>${c.fecha}</strong><br>
+        Peso: ${c.peso} kg, Peso canal: ${c.pesoCanal} kg<br>
+        Pagado: ₡${c.pagado.toLocaleString('es-CR')}, Valor venta: ₡${c.valorCanal.toLocaleString('es-CR')}, Ganancia: ₡${c.ganancia.toLocaleString('es-CR')}
+      </div>
+      <button class="delete-btn" onclick="eliminarCompra(${index})">X</button>
+    `;
+    lista.prepend(item);
+  });
+  localStorage.setItem('compras', JSON.stringify(compras));
+}
+
+function agregarCompra(){
+  const peso = Number(document.getElementById('peso').value) || 0;
+  if(peso<=0) return alert("Ingrese un peso válido");
+  const precioCompra = Number(document.getElementById('precioCompra').value) || 0;
+  const precioCanal = Number(document.getElementById('precioCanal').value) || 0;
+
+  let pesoCanal = peso - 250;
+  if (pesoCanal < 0) pesoCanal = 0;
+  const pagado = peso * precioCompra;
+  const valorCanal = pesoCanal * precioCanal;
+  const ganancia = valorCanal - pagado;
+  const fecha = new Date().toLocaleString('es-CR');
+
+  compras.push({fecha,peso,pesoCanal,pagado,valorCanal,ganancia});
+  renderLista();
+}
+
+function eliminarCompra(index){
+  compras.splice(index,1);
+  renderLista();
+}
+
+// --- LOCAL STORAGE ---
+function cargarLocalStorage(){
+  const data = localStorage.getItem('compras');
+  if(data){
+    compras = JSON.parse(data);
+    renderLista();
+  }
+}
+cargarLocalStorage();
+
+// --- EXPORTAR A EXCEL (CSV con ₡ y separador de miles) ---
+function exportarExcel(){
+  if(compras.length===0) return alert("No hay datos para exportar");
+
+  function formatCR(num){
+    return '₡' + num.toLocaleString('es-CR');
+  }
+
+  let csv = 'Fecha,Peso,Peso Canal,Pagado,Valor Venta,Ganancia\n';
+  compras.forEach(c=>{
+    csv += `"${c.fecha}",${c.peso},${c.pesoCanal},${formatCR(c.pagado)},${formatCR(c.valorCanal)},${formatCR(c.ganancia)}\n`;
+  });
+
+  const blob = new Blob([csv], {type: 'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'compras.csv';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // calcular al cargar
