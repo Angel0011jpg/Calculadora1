@@ -3,161 +3,80 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Calculadora</title>
+<title>Calculadora Subasta</title>
 
 <style>
   :root{
-    --bg:#f2f4f7;
-    --card:#ffffff;
-    --text:#2c3e50;
-    --label:#34495e;
-    --input-border:#d1d1d1;
-    --result-bg:#f8fafc;
+    --bg:#f2f4f7; --card:#ffffff; --text:#2c3e50;
+    --label:#34495e; --input-border:#d1d1d1; --result-bg:#f8fafc;
   }
-
   body.dark{
-    --bg:#1e1e1e;
-    --card:#2a2a2a;
-    --text:#f1f1f1;
-    --label:#d0d0d0;
-    --input-border:#555;
-    --result-bg:#333;
+    --bg:#1e1e1e; --card:#2a2a2a; --text:#f1f1f1;
+    --label:#d0d0d0; --input-border:#555; --result-bg:#333;
   }
-
   *{transition: all .25s ease;}
-  body{
-    font-family:Segoe UI,Arial,sans-serif;
-    margin:0;
-    background:var(--bg);
-    display:flex;
-    justify-content:center;
-    padding:18px;
-  }
+  body{font-family:Segoe UI,Arial,sans-serif;margin:0;background:var(--bg);display:flex;justify-content:center;padding:18px;}
   .app{width:100%;max-width:520px}
-
-  .header{
-    background:#2c3e50;
-    color:#fff;
-    padding:14px;
-    border-radius:14px;
-    text-align:center;
-    font-weight:700;
-    box-shadow:0 6px 18px rgba(0,0,0,0.12);
-    margin-bottom:16px;
-    position:relative;
-  }
-
-  .toggle-dark{
-    position:absolute;
-    right:12px;
-    top:12px;
-    cursor:pointer;
-    font-size:14px;
-    background:#0004;
-    padding:6px 10px;
-    border-radius:8px;
-    color:white;
-    user-select:none;
-  }
-
-  .card{
-    background:var(--card);
-    padding:18px;
-    border-radius:14px;
-    box-shadow:0 6px 18px rgba(0,0,0,0.06);
-    margin-bottom:14px;
-  }
-
+  .header{background:#2c3e50;color:#fff;padding:14px;border-radius:14px;text-align:center;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,0.12);margin-bottom:16px;position:relative;}
+  .toggle-dark{position:absolute;right:12px;top:12px;cursor:pointer;font-size:14px;background:#0004;padding:6px 10px;border-radius:8px;color:white;user-select:none;}
+  .card{background:var(--card);padding:18px;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin-bottom:14px;}
   label{display:block;font-weight:600;color:var(--label);margin-bottom:6px}
-  input{
-    width:100%;
-    padding:12px;
-    border-radius:10px;
-    border:1.5px solid var(--input-border);
-    font-size:16px;
-    margin-bottom:12px;
-    background:var(--bg);
-    color:var(--text);
-  }
-
+  input, select{width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--input-border);font-size:16px;margin-bottom:12px;background:var(--bg);color:var(--text);}
   .price-controls{display:flex;gap:8px;margin-bottom:10px}
-  .small-btn{
-    padding:8px 12px;
-    border-radius:10px;
-    border:none;
-    font-weight:700;
-    cursor:pointer;
-    background:#3b82f6;
-    color:white;
-    transition:transform .15s ease;
-  }
+  .small-btn{padding:8px 12px;border-radius:10px;border:none;font-weight:700;cursor:pointer;background:#3b82f6;color:white;transition:transform .15s ease;}
   .small-btn:active{transform:scale(0.92)}
-
-  .result-box{
-    background:var(--result-bg);
-    padding:14px;
-    border-radius:12px;
-    margin-top:8px;
-    opacity:0;
-    animation:fadeIn .5s forwards;
-  }
+  .result-box{background:var(--result-bg);padding:14px;border-radius:12px;margin-top:8px;opacity:0;animation:fadeIn .5s forwards;}
   @keyframes fadeIn{to{opacity:1;}}
   .res{margin:8px 0;font-size:16px}
   .ganancia{font-size:20px;font-weight:800}
   .g-pos{color:#2ecc71}
   .g-neg{color:#e74c3c}
   .label-inline{font-size:13px;color:#7f8c8d;margin-bottom:6px}
-
   .lista-compras{margin-top:16px;}
-  .lista-item{
-    background:var(--card);
-    padding:12px;
-    border-radius:12px;
-    margin-bottom:10px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    box-shadow:0 3px 12px rgba(0,0,0,0.06);
-  }
-  .item-info{flex:1; font-size:14px;}
-  .delete-btn{
-    padding:4px 8px;
-    background:#e74c3c;
-    border:none;
-    color:white;
-    font-weight:700;
-    border-radius:8px;
-    cursor:pointer;
-  }
-
+  .lista-item{background:var(--card);padding:12px;border-radius:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 3px 12px rgba(0,0,0,0.06);}
+  .item-info{flex:1;font-size:14px;}
+  .delete-btn{padding:4px 8px;background:#e74c3c;border:none;color:white;font-weight:700;border-radius:8px;cursor:pointer;}
   .btns-main{display:flex;gap:12px;margin-top:6px;flex-wrap:wrap;}
-  .btn-main{
-    flex:1;
-    min-width:120px;
-    padding:10px;
-    border-radius:10px;
-    border:none;
-    font-weight:700;
-    cursor:pointer;
-    background:#3b82f6;
-    color:white;
-  }
+  .btn-main{flex:1;min-width:120px;padding:10px;border-radius:10px;border:none;font-weight:700;cursor:pointer;background:#3b82f6;color:white;}
   .btn-main:active{transform:scale(0.95);}
   .fecha{margin-bottom:12px;text-align:center;font-weight:600;color:var(--label);}
+  .totales{display:flex;gap:12px;justify-content:space-around;margin-bottom:12px;}
+  .total-box{background:var(--card);padding:10px;border-radius:10px;text-align:center;flex:1;box-shadow:0 3px 12px rgba(0,0,0,0.06);}
+  .notification{position:fixed;top:20px;right:20px;background:#3b82f6;color:white;padding:12px 20px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.2);display:none;z-index:1000;}
+  .inicio-page{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;}
+  .inicio-btn{padding:14px 20px;margin:8px;border:none;border-radius:12px;background:#3b82f6;color:white;font-size:16px;font-weight:700;cursor:pointer;}
 </style>
 </head>
 
 <body>
-  <div class="app">
+<div id="app-container">
 
+  <!-- PAGINA INICIO -->
+  <div id="inicio-page" class="inicio-page">
+    <h2>Seleccione la subasta</h2>
+    <button class="inicio-btn" onclick="seleccionarSubasta('El Progreso')">El Progreso</button>
+    <button class="inicio-btn" onclick="seleccionarSubasta('Cañas')">Cañas</button>
+    <button class="inicio-btn" onclick="seleccionarSubasta('Upala')">Upala</button>
+  </div>
+
+  <!-- APP PRINCIPAL -->
+  <div id="main-app" style="display:none;">
     <div class="fecha" id="fecha"></div>
 
     <div class="header">
-      Calculadora
+      Calculadora - <span id="subasta-nombre"></span>
       <div class="toggle-dark" onclick="toggleDark()">🌙</div>
     </div>
 
     <div class="card">
+      <label>Usuario</label>
+      <select id="usuario" onchange="calcular()"> 
+        <option value="Anyel">Anyel</option>
+        <option value="Carlos">Carlos</option>
+        <option value="Sandra">Sandra</option>
+        <option value="Lourdes">Lourdes</option>
+      </select>
+
       <label>Peso del animal (kg)</label>
       <input id="peso" type="number" placeholder="Ej: 700" oninput="calcular()" />
 
@@ -166,8 +85,8 @@
           <label>Precio de compra (₡/kg)</label>
           <input id="precioCompra" type="number" value="0" oninput="calcular()" />
           <div class="price-controls">
-            <button class="small-btn" onclick="ajustar('compra', 10)">+10</button>
-            <button class="small-btn" onclick="ajustar('compra', -10)">-10</button>
+            <button class="small-btn" onclick="ajustar('compra',10)">+10</button>
+            <button class="small-btn" onclick="ajustar('compra',-10)">-10</button>
           </div>
           <div class="label-inline">Se usa para calcular cuánto pagaste</div>
         </div>
@@ -176,8 +95,8 @@
           <label>Precio canal / venta (₡/kg)</label>
           <input id="precioCanal" type="number" value="0" oninput="calcular()" />
           <div class="price-controls">
-            <button class="small-btn" onclick="ajustar('canal', 10)">+10</button>
-            <button class="small-btn" onclick="ajustar('canal', -10)">-10</button>
+            <button class="small-btn" onclick="ajustar('canal',10)">+10</button>
+            <button class="small-btn" onclick="ajustar('canal',-10)">-10</button>
           </div>
           <div class="label-inline">Se usa para calcular el valor del canal</div>
         </div>
@@ -187,7 +106,13 @@
         <button class="btn-main" onclick="agregarCompra()">Compra</button>
         <button class="btn-main" onclick="limpiar()">Limpiar</button>
         <button class="btn-main" onclick="exportarExcel()">Exportar a Excel</button>
+        <button class="btn-main" onclick="regresarInicio()">Regresar al inicio</button>
       </div>
+    </div>
+
+    <div class="totales">
+      <div class="total-box">Total Pagado: ₡<span id="totalPagado">0</span></div>
+      <div class="total-box">Total Ganancia: ₡<span id="totalGanancia">0</span></div>
     </div>
 
     <div class="card">
@@ -201,21 +126,61 @@
     </div>
 
     <div class="lista-compras" id="listaCompras"></div>
-
   </div>
 
-<script>
+</div>
+
+<div class="notification" id="notification"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.16.0/firebase-app.js";
+import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.16.0/firebase-database.js";
+
+// --- CONFIGURACIÓN FIREBASE ---
+const firebaseConfig = {
+  apiKey: "AIzaSyDJglJqZQN5XSVGX0TiU5okB01vLFqLAWk",
+  authDomain: "calculadora-b8f33.firebaseapp.com",
+  databaseURL: "https://calculadora-b8f33-default-rtdb.firebaseio.com",
+  projectId: "calculadora-b8f33",
+  storageBucket: "calculadora-b8f33.firebasestorage.app",
+  messagingSenderId: "551620137948",
+  appId: "1:551620137948:web:53e28cb803202c43b5b519",
+  measurementId: "G-B44J3TGTM2"
+};
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
+let subastaActual = "";
+let usuarioActual = "";
+let comprasRef;
 let compras = [];
+
+// --- INICIO ---
+function seleccionarSubasta(subasta){
+  subastaActual = subasta;
+  document.getElementById('subasta-nombre').textContent = subasta;
+  document.getElementById('inicio-page').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+  usuarioActual = document.getElementById('usuario').value;
+  comprasRef = ref(database, `compras/${subasta}`);
+  escucharCompras();
+  mostrarFecha();
+}
+
+// --- REGRESAR ---
+function regresarInicio(){
+  document.getElementById('inicio-page').style.display = 'flex';
+  document.getElementById('main-app').style.display = 'none';
+}
 
 // --- CALCULOS ---
 function calcular(){
   const peso = Number(document.getElementById('peso').value) || 0;
   const precioCompra = Number(document.getElementById('precioCompra').value) || 0;
   const precioCanal  = Number(document.getElementById('precioCanal').value) || 0;
-
   const pagado = peso * precioCompra;
-  let pesoCanal = peso - 250;
-  if (pesoCanal < 0) pesoCanal = 0;
+  let pesoCanal = peso - 250; if(pesoCanal<0)pesoCanal=0;
   const valorCanal = pesoCanal * precioCanal;
   const ganancia = valorCanal - pagado;
 
@@ -224,129 +189,124 @@ function calcular(){
   document.getElementById('valorCanal').textContent = valorCanal.toLocaleString('es-CR');
 
   const gananciaText = document.getElementById('gananciaText');
-  if (ganancia < 0) {
-    gananciaText.classList.add('g-neg');
-    gananciaText.classList.remove('g-pos');
-    gananciaText.querySelector('strong').textContent = 'Pérdida:';
+  if (ganancia<0){
+    gananciaText.classList.add('g-neg'); gananciaText.classList.remove('g-pos');
+    gananciaText.querySelector('strong').textContent='Pérdida:';
     document.getElementById('ganancia').textContent = (-ganancia).toLocaleString('es-CR');
   } else {
-    gananciaText.querySelector('strong').textContent = 'Ganancia:';
-    document.getElementById('ganancia').textContent = ganancia.toLocaleString('es-CR');
-
-    if (ganancia < 90000) {
-      gananciaText.classList.add('g-neg');
-      gananciaText.classList.remove('g-pos');
-    } else {
-      gananciaText.classList.add('g-pos');
-      gananciaText.classList.remove('g-neg');
-    }
+    gananciaText.querySelector('strong').textContent='Ganancia:';
+    document.getElementById('ganancia').textContent=ganancia.toLocaleString('es-CR');
+    if(ganancia<90000){gananciaText.classList.add('g-neg'); gananciaText.classList.remove('g-pos');}
+    else{gananciaText.classList.add('g-pos'); gananciaText.classList.remove('g-neg');}
   }
 }
 
 function ajustar(tipo, delta){
-  if (tipo === 'compra'){
-    let el = document.getElementById('precioCompra');
-    let v = Number(el.value) || 0; v += delta; if (v<0) v=0; el.value = v;
+  if(tipo==='compra'){
+    let el=document.getElementById('precioCompra');
+    let v=Number(el.value)||0; v+=delta; if(v<0)v=0; el.value=v;
   } else {
-    let el = document.getElementById('precioCanal');
-    let v = Number(el.value) || 0; v += delta; if (v<0) v=0; document.getElementById('precioCanal').value = v;
+    let el=document.getElementById('precioCanal');
+    let v=Number(el.value)||0; v+=delta; if(v<0)v=0; el.value=v;
   }
   calcular();
 }
 
-function toggleDark(){document.body.classList.toggle("dark");}
 function limpiar(){
-  document.getElementById('peso').value = '';
-  document.getElementById('precioCompra').value = 0;
-  document.getElementById('precioCanal').value = 0;
+  document.getElementById('peso').value=''; document.getElementById('precioCompra').value=0; document.getElementById('precioCanal').value=0;
   calcular();
 }
+
+document.getElementById('usuario').addEventListener('change',()=>{
+  usuarioActual=document.getElementById('usuario').value;
+});
 
 // --- FECHA ---
 function mostrarFecha(){
-  const f = new Date();
-  const fechaStr = f.toLocaleDateString('es-CR') + ' ' + f.toLocaleTimeString('es-CR');
-  document.getElementById('fecha').textContent = fechaStr;
+  const f=new Date();
+  const fechaStr=f.toLocaleDateString('es-CR')+' '+f.toLocaleTimeString('es-CR');
+  document.getElementById('fecha').textContent=fechaStr;
+  setTimeout(mostrarFecha,1000);
 }
-setInterval(mostrarFecha, 1000);
 
-// --- LISTA DE COMPRAS ---
-function renderLista(){
-  const lista = document.getElementById('listaCompras');
-  lista.innerHTML = '';
-  compras.forEach((c,index)=>{
-    const item = document.createElement('div');
-    item.className='lista-item';
+// --- NOTIFICACIONES ---
+function notificar(msg){
+  const notif=document.getElementById('notification');
+  notif.textContent=msg; notif.style.display='block';
+  setTimeout(()=>{notif.style.display='none';},2000);
+}
+
+// --- LISTA Y FIREBASE ---
+function renderLista(data){
+  compras=data;
+  const lista=document.getElementById('listaCompras'); lista.innerHTML='';
+  let totalP=0; let totalG=0;
+  data.forEach(c=>{
+    totalP+=c.pagado; totalG+=c.ganancia;
+    const item=document.createElement('div'); item.className='lista-item';
     item.innerHTML=`
       <div class="item-info">
-        <strong>${c.fecha}</strong><br>
+        <strong>${c.fecha}</strong> - ${c.usuario}<br>
         Peso: ${c.peso} kg, Peso canal: ${c.pesoCanal} kg<br>
         Pagado: ₡${c.pagado.toLocaleString('es-CR')}, Valor venta: ₡${c.valorCanal.toLocaleString('es-CR')}, Ganancia: ₡${c.ganancia.toLocaleString('es-CR')}
       </div>
-      <button class="delete-btn" onclick="eliminarCompra(${index})">X</button>
+      <button class="delete-btn" onclick="eliminarCompraFirebase('${c.key}')">X</button>
     `;
     lista.prepend(item);
   });
-  localStorage.setItem('compras', JSON.stringify(compras));
+  document.getElementById('totalPagado').textContent=totalP.toLocaleString('es-CR');
+  document.getElementById('totalGanancia').textContent=totalG.toLocaleString('es-CR');
 }
 
+// --- AGREGAR COMPRA ---
 function agregarCompra(){
-  const peso = Number(document.getElementById('peso').value) || 0;
-  if(peso<=0) return alert("Ingrese un peso válido");
-  const precioCompra = Number(document.getElementById('precioCompra').value) || 0;
-  const precioCanal = Number(document.getElementById('precioCanal').value) || 0;
-
-  let pesoCanal = peso - 250;
-  if (pesoCanal < 0) pesoCanal = 0;
-  const pagado = peso * precioCompra;
-  const valorCanal = pesoCanal * precioCanal;
-  const ganancia = valorCanal - pagado;
-  const fecha = new Date().toLocaleString('es-CR');
-
-  compras.push({fecha,peso,pesoCanal,pagado,valorCanal,ganancia});
-  renderLista();
+  const peso=Number(document.getElementById('peso').value)||0;
+  if(peso<=0){alert("Ingrese un peso válido"); return;}
+  const precioCompra=Number(document.getElementById('precioCompra').value)||0;
+  const precioCanal=Number(document.getElementById('precioCanal').value)||0;
+  let pesoCanal=peso-250; if(pesoCanal<0)pesoCanal=0;
+  const pagado=peso*precioCompra;
+  const valorCanal=pesoCanal*precioCanal;
+  const ganancia=valorCanal-pagado;
+  const fecha=new Date().toLocaleString('es-CR');
+  const compra={fecha,peso,pesoCanal,pagado,valorCanal,ganancia,usuario:usuarioActual};
+  push(comprasRef, compra);
+  notificar('Compra agregada');
 }
 
-function eliminarCompra(index){
-  compras.splice(index,1);
-  renderLista();
-}
-
-// --- LOCAL STORAGE ---
-function cargarLocalStorage(){
-  const data = localStorage.getItem('compras');
-  if(data){
-    compras = JSON.parse(data);
-    renderLista();
-  }
-}
-cargarLocalStorage();
-
-// --- EXPORTAR A EXCEL (CSV con ₡ y separador de miles) ---
-function exportarExcel(){
-  if(compras.length===0) return alert("No hay datos para exportar");
-
-  function formatCR(num){
-    return '₡' + num.toLocaleString('es-CR');
-  }
-
-  let csv = 'Fecha,Peso,Peso Canal,Pagado,Valor Venta,Ganancia\n';
-  compras.forEach(c=>{
-    csv += `"${c.fecha}",${c.peso},${c.pesoCanal},${formatCR(c.pagado)},${formatCR(c.valorCanal)},${formatCR(c.ganancia)}\n`;
+// --- ESCUCHAR COMPRAS EN TIEMPO REAL ---
+function escucharCompras(){
+  onValue(comprasRef, snapshot=>{
+    const data = snapshot.val() || {};
+    const lista = Object.entries(data).map(([key,value])=>({...value,key}));
+    renderLista(lista);
   });
-
-  const blob = new Blob([csv], {type: 'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'compras.csv';
-  a.click();
-  URL.revokeObjectURL(url);
 }
 
-// calcular al cargar
-calcular();
-</script>
+// --- ELIMINAR ---
+function eliminarCompraFirebase(key){
+  if(confirm("¿Desea eliminar esta compra?")){
+    remove(ref(database, `compras/${subastaActual}/${key}`));
+  }
+}
 
+// --- EXPORTAR CSV ---
+function exportarExcel(){
+  if(compras.length===0){alert("No hay datos para exportar"); return;}
+  const subasta=subastaActual;
+  let csv='Subasta,"Usuario",Fecha,Peso,Peso Canal,Pagado,Valor Venta,Ganancia\n';
+  compras.forEach(c=>{
+    csv+=`${subasta},"${c.usuario}","${c.fecha}",${c.peso},${c.pesoCanal},${c.pagado},${c.valorCanal},${c.ganancia}\n`;
+  });
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=`${subasta}_compras.csv`; a.click();
+  URL.revokeObjectURL(url);
+  notificar('Datos exportados');
+}
+
+// --- DARK MODE ---
+function toggleDark(){document.body.classList.toggle("dark");}
+</script>
 </body>
 </html>
