@@ -2,9 +2,25 @@
 <html lang="es">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<!-- ANTI-ZOOM: bloquea pinch + doble-tap accidental en móviles -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>Calculadora Subasta</title>
 <style>
+/* ---------- ANTI-ZOOM / TOUCH UX ---------- */
+/* Evita que el navegador haga zoom al tocar rápido/doble-tap en elementos interactivos */
+button, .small-btn, .btn-main, .delete-btn, input, select {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Evita selección y popups en iOS */
+* {
+  -webkit-touch-callout: none;
+}
+
+/* ---------- RESTO DE ESTILOS (ORIGINAL) ---------- */
 :root{
   --bg:#f2f4f7;
   --card:#ffffff;
@@ -395,6 +411,54 @@ input, select{
 <div id="notificacion" class="notification"></div>
 
 <script>
+/* ---------------------------
+   ANTI-ZOOM: PINCH + DOUBLE-TAP
+   - Previene pinch zoom (2 dedos)
+   - Previene double-tap zoom pero mantiene el click del segundo toque
+----------------------------*/
+(function() {
+  // Previene pinch (si hay más de 1 touch)
+  document.addEventListener('touchmove', function(e){
+    if (e.touches && e.touches.length > 1) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  // Manejo para evitar el zoom por doble-tap:
+  // Si detectamos un touchstart muy rápido después del anterior, prevenimos el comportamiento
+  // por defecto (zoom) y disparamos manualmente un click en el elemento tocado.
+  let lastTouch = 0;
+  const DELAY_MS = 300; // umbral para considerar doble-tap
+
+  document.addEventListener('touchstart', function(e){
+    const now = Date.now();
+    const dt = now - lastTouch;
+    if (dt > 0 && dt <= DELAY_MS) {
+      // Segundo toque rápido: prevenir zoom y forzar click
+      e.preventDefault(); // evita zoom en iOS/Android
+      const touch = e.changedTouches && e.changedTouches[0];
+      if (touch) {
+        // Obtener elemento en coordenadas del toque y disparar click
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (target) {
+          // dispatchEvent click de forma segura
+          try {
+            target.click();
+          } catch(err){ /* no fatal */ }
+        }
+      }
+    }
+    lastTouch = now;
+  }, { passive: false });
+
+  // Algunos navegadores iOS antiguos disparan 'gesturestart' para pellizcos: prevenirlo si existe
+  window.addEventListener('gesturestart', function(e){
+    e.preventDefault();
+  }, { passive: false });
+})();
+
+/* ---------- TU JS ORIGINAL (sin cambios) ---------- */
+
 let compras = [];
 let usuarioActual = '';
 let subastaActual = '';
